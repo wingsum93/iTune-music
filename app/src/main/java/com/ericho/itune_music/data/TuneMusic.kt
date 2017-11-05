@@ -1,6 +1,7 @@
 package com.ericho.itune_music.data
 
 import com.google.gson.annotations.SerializedName
+import com.orm.SugarRecord
 import java.util.*
 
 /**
@@ -44,9 +45,9 @@ data class TuneMusic(
         @SerializedName("artworkUrl100")
         val artworkUrl100: String,
         @SerializedName("collectionPrice")
-        val collectionPrice: Int,
+        val collectionPrice: Float,
         @SerializedName("trackPrice")
-        val trackPrice: Int,
+        val trackPrice: Float,
         @SerializedName("releasedDate")
         val releasedDate:Date,
         @SerializedName("collectionExplicitness")
@@ -72,7 +73,9 @@ data class TuneMusic(
         @SerializedName("isStreamable")
         val isStreamable:Boolean
 
-) {
+) :SugarRecord(){
+
+
         fun getArtworkUrl():String{
                 return artworkUrl100
         }
@@ -96,8 +99,8 @@ data class TuneMusic(
                             artworkUrl30 = "http://is3.mzstatic.com/image/thumb/Music7/v4/64/15/b0/6415b03f-3da9-51ec-3057-92d902d92917/source/30x30bb.jpg",
                             artworkUrl60 = "http://is3.mzstatic.com/image/thumb/Music7/v4/64/15/b0/6415b03f-3da9-51ec-3057-92d902d92917/source/60x60bb.jpg",
                             artworkUrl100 = "http://is3.mzstatic.com/image/thumb/Music7/v4/64/15/b0/6415b03f-3da9-51ec-3057-92d902d92917/source/100x100bb.jpg",
-                            collectionPrice = 63,
-                            trackPrice = 8,
+                            collectionPrice = 63f,
+                            trackPrice = 8f,
                             releasedDate = Date(),
                             collectionExplicitness = "track",
                             trackExplicitness = "track",

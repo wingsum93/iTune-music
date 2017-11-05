@@ -53,6 +53,11 @@
                 android:textSize="18sp"
                 tools:text="artist name 111"/>
         </LinearLayout>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/txv_num"
+            tools:text="12"/>
     </LinearLayout>
 
 </LinearLayout>

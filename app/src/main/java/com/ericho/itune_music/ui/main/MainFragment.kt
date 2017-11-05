@@ -1,11 +1,16 @@
 package com.ericho.itune_music.ui.main
 
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.ericho.itune_music.Constant
 import com.ericho.itune_music.R
 import com.ericho.itune_music.data.TuneMusic
 import com.ericho.itune_music.extension.toast
@@ -20,6 +25,7 @@ import timber.log.Timber
 class MainFragment:Fragment() ,MainPageContract.View {
 
     private lateinit var presenter:MainPageContract.Presenter
+    private val intentFilter = IntentFilter(Constant.Broadcast.ACTION)
 
     lateinit var adapter:MainAdapter
     var items:MutableList<TuneMusic> = arrayListOf(TuneMusic.getTemplate())
@@ -55,6 +61,11 @@ class MainFragment:Fragment() ,MainPageContract.View {
         adapter = MainAdapter(activity, items)
         recyclerView.adapter = adapter
         recyclerView.setHasFixedSize(true)
+        recyclerView.setUpFloatingActionButton(fab)
+
+        fab.setOnClickListener {
+            presenter.requestSongList()
+        }
 
     }
 
@@ -63,10 +74,13 @@ class MainFragment:Fragment() ,MainPageContract.View {
         this.presenter = presenter
     }
 
-    override fun showMusics(comments: List<TuneMusic>) {
+    override fun showMusics(musics: List<TuneMusic>) {
         items.clear()
-        items.addAll(comments)
+        items.addAll(musics)
         adapter.notifyDataSetChanged()
+        musics.forEach {
+//            println(it.)
+        }
     }
 
     override fun showErrorMessage(e: Throwable) {
@@ -75,6 +89,22 @@ class MainFragment:Fragment() ,MainPageContract.View {
     }
 
     override fun showLoading(loading: Boolean) {
+        if (true){
+            items.clear()
+            adapter.notifyDataSetChanged()
+        }else{
+
+        }
+    }
+
+    override fun setRefreshButton(enable: Boolean) {
+        fab.isEnabled = enable
+    }
+
+    class MyReceiver() :BroadcastReceiver(){
+        override fun onReceive(context: Context?, intent: Intent?) {
+            TODO()
+        }
 
     }
 }

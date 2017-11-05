@@ -29,7 +29,8 @@ class MainAdapter(context:Context,items:List<TuneMusic>): BaseRecyclerAdapter<Tu
         holder!!
         holder.img_1.loadNormal(z.getArtworkUrl())
         holder.txv_artist_name.text = z.artistName
-        holder.txv_song_name.text = z.collectionCensoredName
+        holder.txv_song_name.text = z.trackName
+        holder.txv_num.text = (position + 1).toString()
 
     }
 
@@ -37,5 +38,6 @@ class MainAdapter(context:Context,items:List<TuneMusic>): BaseRecyclerAdapter<Tu
         val img_1 :ImageView = view.findViewById(R.id.img_1)
         val txv_artist_name :TextView = view.findViewById(R.id.txv_artist_name)
         val txv_song_name :TextView = view.findViewById(R.id.txv_song_name)
+        val txv_num :TextView = view.findViewById(R.id.txv_num)
     }
 }

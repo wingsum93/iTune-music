@@ -2,6 +2,7 @@ package com.ericho.itune_music.ui.main
 
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import com.ericho.itune_music.Injection
 import com.ericho.itune_music.R
 import com.ericho.itune_music.data.remote.MusicRemoteDataSource
 
@@ -25,7 +26,7 @@ class MainActivity : AppCompatActivity() {
                     .add(R.id.container,fragment,MainFragment::class.java.name)
                     .commit()
         }
-        MainPresenter(fragment,MusicRemoteDataSource)
+        MainPresenter(fragment,Injection.provideMusicDataSource())
     }
 
     override fun onSaveInstanceState(outState: Bundle?) {

@@ -1,6 +1,7 @@
 package com.ericho.itune_music.widget
 
 import android.content.Context
+import android.support.design.widget.FloatingActionButton
 import android.support.v7.widget.RecyclerView
 import android.util.AttributeSet
 
@@ -15,22 +16,32 @@ class MRecyclerView:RecyclerView {
     constructor(context:Context,attr:AttributeSet):  super(context,attr)
     constructor(context:Context,attr:AttributeSet,defStyle:Int):  super(context,attr,defStyle)
 
+    private var floatingActionButton:FloatingActionButton? = null
 
 
+    fun setUpFloatingActionButton(view:FloatingActionButton){
+        floatingActionButton = view
+        this.addOnScrollListener(object : OnScrollWrapper() {
+            override fun onScrollStateChanged(recyclerView: RecyclerView?, newState: Int) {
+                super.onScrollStateChanged(recyclerView, newState)
+                when(newState){
+                    RecyclerView.SCROLL_STATE_IDLE -> {
+                        floatingActionButton?.show()
+                    }
+                    else -> floatingActionButton?.hide()
+                }
+            }
+        })
+    }
 
 
-
-
-
-    class OnScrollWrapper(val listener: OnScrollListener):OnScrollListener(){
+    open class OnScrollWrapper():OnScrollListener(){
 
 
         override fun onScrolled(recyclerView: RecyclerView?, dx: Int, dy: Int) {
-            listener.onScrolled(recyclerView, dx, dy)
         }
 
         override fun onScrollStateChanged(recyclerView: RecyclerView?, newState: Int) {
-            listener.onScrollStateChanged(recyclerView, newState)
         }
     }
 }

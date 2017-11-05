@@ -1,11 +1,7 @@
 package com.ericho.itune_music
 
-import android.support.test.InstrumentationRegistry
 import android.support.test.runner.AndroidJUnit4
-import com.ericho.itune_music.data.datasource.MusicDataSource
 import com.ericho.itune_music.data.remote.MusicRemoteDataSource
-import com.google.gson.Gson
-import org.junit.Assert
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -17,25 +13,35 @@ import org.junit.runner.RunWith
  */
 @RunWith(AndroidJUnit4::class)
 class NetworkDataTest {
-    val gson = Gson()
+    private val musicRemoteDataSource = MusicRemoteDataSource()
     @Test
     fun normalSearchTest() {
         // Context of the app under test.
-        val o = MusicRemoteDataSource.getMusicList("eric")
+        val o = musicRemoteDataSource.getMusicList("top")
 
-        val z = o.blockingFirst().body()
+        val z = o.blockingFirst().list
 
-        assertTrue("the search result is not ok",z!!.results.size>0 )
+        assertTrue("the search result is not ok", z!!.size > 0)
     }
+
     @Test
-    fun infoTest(){
-        val o = MusicRemoteDataSource.getMusicList("eric")
-        val z = o.blockingFirst().body()
+    fun infoTest() {
+        val o = musicRemoteDataSource.getMusicList("top")
+        val z = o.blockingFirst().list
 
-        val items = z!!.results
-
+        val items = z!!
+        val set: MutableSet<String> = mutableSetOf()
         items.forEach {
-            println("${it.artistId} ranking ${it.trackName}")
+            val str = it.trackName
+            set.add(str)
         }
+        val set2 = HashSet<String>(set)
+        items.forEach {
+            set2.remove(it.trackName)
+        }
+
+        assertTrue("collection check is not correct" +
+                "a = ${items.size} , b = ${set.size}",
+                items.size == set.size)
     }
 }

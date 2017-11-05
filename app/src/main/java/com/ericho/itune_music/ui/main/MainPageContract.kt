@@ -11,13 +11,15 @@ import com.ericho.ultradribble.mvp.BaseView
  */
 interface MainPageContract {
     interface View :BaseView<Presenter>{
-        fun showMusics(comments: List<TuneMusic>)
+        fun showMusics(musics: List<TuneMusic>)
         fun showErrorMessage(e:Throwable)
         fun showLoading(loading:Boolean = true)
+
+        fun setRefreshButton(enable:Boolean)
     }
     interface Presenter :BasePresenter{
         fun requestSongList()
-
+        fun setNetworkState(enable: Boolean)
 
     }
 
