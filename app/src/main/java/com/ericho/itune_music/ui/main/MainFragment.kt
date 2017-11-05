@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.net.ConnectivityManager
+import android.net.NetworkInfo
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
@@ -67,6 +68,7 @@ class MainFragment : Fragment(), MainPageContract.View {
             presenter.requestSongList(true)
         }
         activity?.registerReceiver(myReceiver, intentFilter)
+        fab.backgroundTintList = activity.resources.getColorStateList(R.color.background_floating_action_button)
     }
 
 
@@ -107,8 +109,14 @@ class MainFragment : Fragment(), MainPageContract.View {
             Timber.d(intent!!.action)
             when (intent.action) {
                 ConnectivityManager.CONNECTIVITY_ACTION -> {
+                    val cm: ConnectivityManager = context!!.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+
+                    val activeNetwork: NetworkInfo? = cm.getActiveNetworkInfo();
+                    val isConnected = activeNetwork != null &&
+                            activeNetwork.isConnectedOrConnecting()
                     val haveNetwork = !intent.extras.getBoolean(ConnectivityManager.EXTRA_NO_CONNECTIVITY)
-                    presenter.setNetworkState(haveNetwork)
+                    Timber.d("isConnected? $isConnected ")
+                    presenter.setNetworkState(isConnected)
 
                 }
 

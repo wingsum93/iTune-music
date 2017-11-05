@@ -14,7 +14,7 @@
         android:layout_width="@dimen/fab_size"
         android:layout_height="@dimen/fab_size"
         android:src="@drawable/ic_refresh_black_24dp"
-        android:backgroundTint="@color/background_floating_action_button"
+
         android:layout_gravity="bottom|right|end"
         android:layout_margin="@dimen/fab_margin"
 

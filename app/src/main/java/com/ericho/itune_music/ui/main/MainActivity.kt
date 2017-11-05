@@ -1,14 +1,13 @@
 package com.ericho.itune_music.ui.main
 
-import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.support.v7.app.AppCompatActivity
 import com.ericho.itune_music.Injection
 import com.ericho.itune_music.R
-import com.ericho.itune_music.data.remote.MusicRemoteDataSource
 
 class MainActivity : AppCompatActivity() {
 
-    lateinit var fragment :MainFragment
+    private lateinit var fragment: MainFragment
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -16,14 +15,14 @@ class MainActivity : AppCompatActivity() {
 
 
         savedInstanceState?.let {
-            fragment = fragmentManager.getFragment(savedInstanceState,MainFragment::class.java.name) as MainFragment
+            fragment = supportFragmentManager.getFragment(it, MainFragment::class.java.simpleName) as MainFragment
         }?:kotlin.run {
             fragment = MainFragment.newInstance()
         }
 
         if(!fragment.isAdded){
             supportFragmentManager.beginTransaction()
-                    .add(R.id.container,fragment,MainFragment::class.java.name)
+                    .add(R.id.container, fragment, "ggg")
                     .commit()
         }
         MainPresenter(fragment,Injection.provideMusicDataSource())
