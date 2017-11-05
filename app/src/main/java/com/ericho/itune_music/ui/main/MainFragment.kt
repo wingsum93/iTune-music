@@ -4,13 +4,13 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.net.ConnectivityManager
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.ericho.itune_music.Constant
 import com.ericho.itune_music.R
 import com.ericho.itune_music.data.TuneMusic
 import com.ericho.itune_music.extension.toast
@@ -22,16 +22,16 @@ import timber.log.Timber
  * for project iTunemusic
  * package name com.ericho.itune_music.ui.main
  */
-class MainFragment:Fragment() ,MainPageContract.View {
+class MainFragment : Fragment(), MainPageContract.View {
 
-    private lateinit var presenter:MainPageContract.Presenter
-    private val intentFilter = IntentFilter(Constant.Broadcast.ACTION)
+    private lateinit var presenter: MainPageContract.Presenter
+    private val intentFilter = IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION)
 
-    lateinit var adapter:MainAdapter
-    var items:MutableList<TuneMusic> = arrayListOf(TuneMusic.getTemplate())
+    lateinit var adapter: MainAdapter
+    var items: MutableList<TuneMusic> = arrayListOf(TuneMusic.getTemplate())
 
     companion object {
-        fun newInstance():MainFragment{
+        fun newInstance(): MainFragment {
             val f = MainFragment()
             val bundle = Bundle()
             f.arguments = bundle
@@ -46,7 +46,7 @@ class MainFragment:Fragment() ,MainPageContract.View {
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
 
         setHasOptionsMenu(true)
-        return inflater!!.inflate(R.layout.fragment_main,container,false)
+        return inflater!!.inflate(R.layout.fragment_main, container, false)
     }
 
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
@@ -55,7 +55,7 @@ class MainFragment:Fragment() ,MainPageContract.View {
         presenter.subscribe()
     }
 
-    fun initView(){
+    fun initView() {
 
         recyclerView.layoutManager = LinearLayoutManager(activity)
         adapter = MainAdapter(activity, items)
@@ -64,9 +64,9 @@ class MainFragment:Fragment() ,MainPageContract.View {
         recyclerView.setUpFloatingActionButton(fab)
 
         fab.setOnClickListener {
-            presenter.requestSongList()
+            presenter.requestSongList(true)
         }
-
+        activity?.registerReceiver(myReceiver, intentFilter)
     }
 
 
@@ -79,32 +79,47 @@ class MainFragment:Fragment() ,MainPageContract.View {
         items.addAll(musics)
         adapter.notifyDataSetChanged()
         musics.forEach {
-//            println(it.)
+            //            println(it.)
         }
     }
 
     override fun showErrorMessage(e: Throwable) {
-        activity.toast(e.message?: "not error message")
+        activity.toast(e.message ?: "not error message")
         Timber.d(e)
     }
 
     override fun showLoading(loading: Boolean) {
-        if (true){
+        if (true) {
             items.clear()
             adapter.notifyDataSetChanged()
-        }else{
+        } else {
 
         }
     }
 
     override fun setRefreshButton(enable: Boolean) {
         fab.isEnabled = enable
+//        fab.backgroundTintList = activity.resources.getColorStateList(R.color.background_floating_action_button)
     }
 
-    class MyReceiver() :BroadcastReceiver(){
+    val myReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
-            TODO()
+            Timber.d(intent!!.action)
+            when (intent.action) {
+                ConnectivityManager.CONNECTIVITY_ACTION -> {
+                    val haveNetwork = !intent.extras.getBoolean(ConnectivityManager.EXTRA_NO_CONNECTIVITY)
+                    presenter.setNetworkState(haveNetwork)
+
+                }
+
+            }
         }
 
+    }
+
+    override fun onDestroyView() {
+        presenter.unsubscribe()
+        activity.unregisterReceiver(myReceiver)
+        super.onDestroyView()
     }
 }

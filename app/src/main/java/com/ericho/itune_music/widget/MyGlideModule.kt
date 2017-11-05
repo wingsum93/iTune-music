@@ -23,7 +23,7 @@ class MyGlideModule : AppGlideModule(){
     companion object {
         // Max cache size of glide.
         @JvmField
-        val MAX_CACHE_SIZE = 1024 * 1024 * 512 // 256M
+        val MAX_CACHE_SIZE = 1024 * 1024 * 128 // 256M
         // 36MB, memory cache size
         // default value: 24MB
         val MAX_MEMORY_CACHE_SIZE = 1024 * 1024 * 36 // 36M

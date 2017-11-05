@@ -1,9 +1,12 @@
 package com.ericho.itune_music.ui.main
 
+import com.ericho.itune_music.data.TuneMusic
 import com.ericho.itune_music.data.datasource.MusicDataSource
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
+import timber.log.Timber
+import java.io.IOException
 
 /**
  * Created by steve_000 on 2/11/2017.
@@ -23,16 +26,19 @@ class MainPresenter(val view: MainPageContract.View, private val dataSource: Mus
 
     override fun subscribe() {
         pingForNetwork()
-        requestSongList()
+        requestSongList(false)
     }
 
     private fun pingForNetwork() {
-        val observable = dataSource.getMusicList("eric")
+        val observable = dataSource.ping()
+                .map {
+                    Timber.d("fab enable? ${it.code()}")
+                    it.code() == 200
+                }
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({
-                    view.setRefreshButton(it.isSuccess())
-
+                    view.setRefreshButton(it)
                 }, {
                     view.setRefreshButton(false)
                 })
@@ -43,27 +49,28 @@ class MainPresenter(val view: MainPageContract.View, private val dataSource: Mus
         mCompositeDispose.dispose()
     }
 
-    override fun requestSongList() {
+    override fun requestSongList(force: Boolean) {
         view.showLoading()
-        val observable = dataSource.getMusicList("top", false)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({
-                    if (it.isSuccess()) {
-                        val items = it.list!!
-                        view.showLoading(false)
-                        view.showMusics(items)
-                    } else {
-                        view.showLoading(false)
-                        view.showErrorMessage(it.e!!)
-                    }
-                }, {
-                    view.showLoading(false)
-                    view.showErrorMessage(it)
-                })
-        mCompositeDispose.add(observable)
+        dataSource.getMusicList("top", fetchDataCallback, force)
+
     }
 
+    val fetchDataCallback: MusicDataSource.LoadMusicCallback = object : MusicDataSource.LoadMusicCallback {
+        override fun onLoadMusics(musics: List<TuneMusic>) {
+            view.showLoading(false)
+            view.showMusics(musics)
+        }
+
+        override fun onLoadError(e: Throwable) {
+            view.showLoading(false)
+            view.showErrorMessage(e)
+        }
+
+        override fun onLoadMusicFail() {
+            view.showLoading(false)
+            view.showErrorMessage(IOException("SP"))
+        }
+    }
     override fun setNetworkState(enable: Boolean) {
         view.setRefreshButton(enable)
     }

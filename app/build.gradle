@@ -71,7 +71,7 @@ dependencies {
     implementation "com.github.bumptech.glide:okhttp3-integration:$glideVersion"
     kapt "com.github.bumptech.glide:compiler:$glideVersion"
     //database
-    implementation 'com.github.satyan:sugar:1.5'
+    implementation 'org.xutils:xutils:3.5.0'
 
     implementation 'com.facebook.stetho:stetho:1.5.0'
     implementation 'com.jakewharton.timber:timber:4.5.1'

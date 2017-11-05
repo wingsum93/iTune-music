@@ -2,10 +2,11 @@ package com.ericho.itune_music.data.repository
 
 import com.ericho.itune_music.data.TuneMusic
 import com.ericho.itune_music.data.datasource.MusicDataSource
-import com.ericho.itune_music.retrofit.BR
+import com.ericho.itune_music.extension.saveCacheResult
+import com.ericho.itune_music.widget.Log
 import io.reactivex.Observable
+import io.reactivex.disposables.CompositeDisposable
 import retrofit2.Response
-import retrofit2.http.Body
 
 /**
  * Created by steve_000 on 3/11/2017.
@@ -14,43 +15,54 @@ import retrofit2.http.Body
  */
 class MusicRepository(private val localMusicDataSource: MusicDataSource,
                       private val remoteMusicDataSource: MusicDataSource) : MusicDataSource {
-    private val items: MutableList<TuneMusic> = arrayListOf()
-    private var currentSearchStr = ""
-    private var cacheCanUse = false
 
+    private val compositeDisposable = CompositeDisposable()
 
-    override fun getMusicList(searchStr: String, forceUpdate: Boolean):Observable<BR<TuneMusic>> {
-        if (!forceUpdate) {
-            if (searchStr == currentSearchStr ) {
-                return localMusicDataSource.getMusicList(searchStr, forceUpdate)
-            } else {
-                return doOnlineCache(searchStr, forceUpdate)
+    override fun getMusicList(searchStr: String, callback: MusicDataSource.LoadMusicCallback, forceUpdate: Boolean) {
+        val callbackForNetwork = object : MusicDataSource.LoadMusicCallback {
+            override fun onLoadMusics(musics: List<TuneMusic>) {
+                callback.onLoadMusics(musics)
+                this@MusicRepository.saveCacheResult(searchStr, musics)
             }
-        } else {
-            return doOnlineCache(searchStr, forceUpdate)
+
+            override fun onLoadError(e: Throwable) {
+                callback.onLoadError(e)
+            }
+
+            override fun onLoadMusicFail() {
+                callback.onLoadMusicFail()
+            }
         }
+
+        //normal handle
+        if (!forceUpdate) {
+            localMusicDataSource.getMusicList(searchStr, object : MusicDataSource.LoadMusicCallback {
+                override fun onLoadMusics(musics: List<TuneMusic>) {
+                    callback.onLoadMusics(musics)
+                }
+
+                override fun onLoadError(e: Throwable) {
+                    Log.w(e)
+                    remoteMusicDataSource.getMusicList(searchStr, callbackForNetwork, forceUpdate)
+                }
+
+                override fun onLoadMusicFail() {
+                    remoteMusicDataSource.getMusicList(searchStr, callbackForNetwork, forceUpdate)
+                }
+            })
+            return
+
+        } else {
+            remoteMusicDataSource.getMusicList(searchStr, callbackForNetwork, forceUpdate)
+            return
+        }
+
     }
 
-    override fun ping(): Observable<Response<Body>> {
+    override fun ping(): Observable<Response<Any>> {
         return remoteMusicDataSource.ping()
     }
 
-    private fun doOnlineCache(string: String, forceUpdate: Boolean): Observable<BR<TuneMusic>> {
-        val xx = remoteMusicDataSource.getMusicList(string, forceUpdate)
-        xx.doOnNext {
-            if (it.isSuccess()){
-                updateCache(string, it.list!!)
-            }
-        }
-        return xx
-    }
-
-    private fun updateCache(cacheStr: String, list: List<TuneMusic>) {
-        items.clear()
-        items.addAll(list)
-        currentSearchStr = cacheStr
-        cacheCanUse = true
-    }
 
     override fun saveMusics(items: List<TuneMusic>) {
         localMusicDataSource.saveMusics(items)
@@ -58,5 +70,9 @@ class MusicRepository(private val localMusicDataSource: MusicDataSource,
 
     override fun deleteMusics() {
         localMusicDataSource.deleteMusics()
+    }
+
+    override fun unsubscribe() {
+        compositeDisposable.dispose()
     }
 }

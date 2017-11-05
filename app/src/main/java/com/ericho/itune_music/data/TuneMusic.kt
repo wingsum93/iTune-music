@@ -1,7 +1,8 @@
 package com.ericho.itune_music.data
 
 import com.google.gson.annotations.SerializedName
-import com.orm.SugarRecord
+import org.xutils.db.annotation.Column
+import org.xutils.db.annotation.Table
 import java.util.*
 
 /**
@@ -9,71 +10,104 @@ import java.util.*
  * for project iTunemusic
  * package name com.ericho.itune_music.data
  */
+@Table(name = "music")
 data class TuneMusic(
         @SerializedName("wrapperType")
-        val wrapperType:String,
+        @Column(name = "wrapperType")
+        val wrapperType: String = "",
         @SerializedName("kind")
-        val kind:String,
+        @Column(name = "kind")
+        val kind: String = "",
         @SerializedName("artistId")
-        val artistId:Int,
+        @Column(name = "artistId")
+        val artistId: Int = 0,
         @SerializedName("collectionId")
-        val collectionId:Int,
+        @Column(name = "collectionId")
+        val collectionId: Int = 0,
         @SerializedName("trackId")
-        val trackId:Int,
+        @Column(name = "trackId")
+        val trackId: Int = 0,
         @SerializedName("artistName")
-        val artistName:String,
+        @Column(name = "artistName")
+        val artistName: String = "",
         @SerializedName("collectionName")
-        val collectionName:String,
+        @Column(name = "collectionName")
+        val collectionName: String = "",
         @SerializedName("trackName")
-        val trackName:String,
+        @Column(name = "trackName")
+        val trackName: String = "",
         @SerializedName("collectionCensoredName")
-        val collectionCensoredName:String,
+        @Column(name = "collectionCensoredName")
+        val collectionCensoredName: String = "",
         @SerializedName("trackCensoredName")
-        val trackCensoredName:String,
+        @Column(name = "trackCensoredName")
+        val trackCensoredName: String = "",
         @SerializedName("artistViewUrl")
-        val artistViewUrl:String,
+        @Column(name = "artistViewUrl")
+        val artistViewUrl: String = "",
         @SerializedName("collectionViewUrl")
-        val collectionViewUrl:String,
+        @Column(name = "collectionViewUrl")
+        val collectionViewUrl: String = "",
         @SerializedName("trackViewUrl")
-        val trackViewUrl:String,
+        @Column(name = "trackViewUrl")
+        val trackViewUrl: String = "",
         @SerializedName("previewUrl")
-        val previewUrl:String,
+        @Column(name = "previewUrl")
+        val previewUrl: String = "",
         @SerializedName("artworkUrl30")
-        val artworkUrl30: String,
+        @Column(name = "artworkUrl30")
+        val artworkUrl30: String = "",
         @SerializedName("artworkUrl60")
-        val artworkUrl60: String,
+        @Column(name = "artworkUrl60")
+        val artworkUrl60: String = "",
         @SerializedName("artworkUrl100")
-        val artworkUrl100: String,
+        @Column(name = "artworkUrl100")
+        val artworkUrl100: String = "",
         @SerializedName("collectionPrice")
-        val collectionPrice: Float,
+        @Column(name = "collectionPrice")
+        val collectionPrice: Float = 0f,
         @SerializedName("trackPrice")
-        val trackPrice: Float,
+        val trackPrice: Float = 0f,
         @SerializedName("releasedDate")
-        val releasedDate:Date,
+        @Column(name = "releasedDate")
+        val releasedDate: Date = Date(),
         @SerializedName("collectionExplicitness")
-        val collectionExplicitness:String,
+        @Column(name = "collectionExplicitness")
+        val collectionExplicitness: String = "",
         @SerializedName("trackExplicitness")
-        val trackExplicitness:String,
+        @Column(name = "trackExplicitness")
+        val trackExplicitness: String = "",
         @SerializedName("discCount")
-        val discCount:Int,
+        @Column(name = "discCount")
+        val discCount: Int = 0,
         @SerializedName("discNumber")
-        val discNumber:Int,
+        @Column(name = "discNumber")
+        val discNumber: Int = 0,
         @SerializedName("trackCount")
-        val trackCount:Int,
+        @Column(name = "trackCount")
+        val trackCount: Int = 0,
         @SerializedName("trackNumber")
-        val trackNumber:Int,
+        @Column(name = "trackNumber")
+        val trackNumber: Int = 0,
         @SerializedName("trackTimeMillis")
-        val trackTimeMillis:Long,
+        @Column(name = "trackTimeMillis")
+        val trackTimeMillis: Long = 0L,
         @SerializedName("country")
-        val country:String,
+        @Column(name = "country")
+        val country: String = "",
         @SerializedName("currency")
-        val currency:String,
+        @Column(name = "currency")
+        val currency: String = "",
         @SerializedName("primaryGenreName")
-        val primaryGenreName:String,
+        @Column(name = "primaryGenreName")
+        val primaryGenreName: String = "",
         @SerializedName("isStreamable")
-        val isStreamable:Boolean
+        @Column(name = "isStreamable")
+        val isStreamable: Boolean = false,
+        @Column(name = "id", isId = true)
+        val id: Long? = null
 
-) :SugarRecord(){
+) {
 
 
         fun getArtworkUrl():String{

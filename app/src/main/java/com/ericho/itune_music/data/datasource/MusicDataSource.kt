@@ -1,11 +1,8 @@
 package com.ericho.itune_music.data.datasource
 
 import com.ericho.itune_music.data.TuneMusic
-import com.ericho.itune_music.retrofit.BR
-import com.ericho.itune_music.retrofit.HSet
 import io.reactivex.Observable
 import retrofit2.Response
-import retrofit2.http.Body
 
 /**
  * Created by steve_000 on 2/11/2017.
@@ -14,10 +11,18 @@ import retrofit2.http.Body
  */
 interface MusicDataSource {
 
-    fun getMusicList(searchStr: String,forceUpdate:Boolean = false): Observable<BR<TuneMusic>>
+    fun getMusicList(searchStr: String, callback: LoadMusicCallback, forceUpdate: Boolean = false)
 
-    fun ping(): Observable<Response<Body>>
+    fun ping(): Observable<Response<Any>>
 
     fun saveMusics(items:List<TuneMusic>)
     fun deleteMusics()
+
+    fun unsubscribe()
+
+    interface LoadMusicCallback {
+        fun onLoadMusics(musics: List<TuneMusic>)
+        fun onLoadError(e: Throwable)
+        fun onLoadMusicFail()// for the condition of load fail
+    }
 }

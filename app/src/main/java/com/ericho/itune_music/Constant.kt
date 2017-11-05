@@ -6,7 +6,7 @@ package com.ericho.itune_music
  * package name com.ericho.itune_music
  */
 object Constant {
-
+    val DB_SEARCH_KEY = "DB_SEARCH_KEY"
     object Broadcast{
         val ACTION = "com.action"
     }

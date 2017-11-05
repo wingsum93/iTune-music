@@ -18,7 +18,7 @@ interface MainPageContract {
         fun setRefreshButton(enable:Boolean)
     }
     interface Presenter :BasePresenter{
-        fun requestSongList()
+        fun requestSongList(force: Boolean = false)
         fun setNetworkState(enable: Boolean)
 
     }

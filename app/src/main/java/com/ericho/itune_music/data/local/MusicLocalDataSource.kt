@@ -1,13 +1,13 @@
 package com.ericho.itune_music.data.local
 
+import com.ericho.itune_music.data.DbConfig
 import com.ericho.itune_music.data.TuneMusic
 import com.ericho.itune_music.data.datasource.MusicDataSource
-import com.ericho.itune_music.retrofit.BR
-import com.ericho.itune_music.retrofit.HSet
-import com.orm.SugarRecord
+import com.ericho.itune_music.extension.loadCacheResult
 import io.reactivex.Observable
+import io.reactivex.disposables.CompositeDisposable
+import org.xutils.x
 import retrofit2.Response
-import retrofit2.http.Body
 
 /**
  * Created by steve_000 on 2/11/2017.
@@ -16,24 +16,45 @@ import retrofit2.http.Body
  */
 class MusicLocalDataSource:MusicDataSource {
 
-    override fun getMusicList(searchStr: String, forceUpdate: Boolean): Observable<BR<TuneMusic>> {
-        val list = SugarRecord.findAll(TuneMusic::class.java) as List<TuneMusic>
-        val tmp = BR<TuneMusic>()
-        tmp.list = list
-        return Observable.just(tmp)
+    private val compositeDisposable = CompositeDisposable()
+
+
+    override fun getMusicList(searchStr: String, callback: MusicDataSource.LoadMusicCallback, forceUpdate: Boolean) {
+        val loadDataCallback = object : MusicDataSource.LoadMusicCallback {
+            override fun onLoadMusics(musics: List<TuneMusic>) {
+                if (musics.isEmpty()) {
+                    callback.onLoadMusicFail()
+                } else {
+                    callback.onLoadMusics(musics)
+                }
+            }
+
+            override fun onLoadError(e: Throwable) {
+                callback.onLoadError(e)
+            }
+
+            override fun onLoadMusicFail() {
+                callback.onLoadMusicFail()
+            }
+        }
+        this.loadCacheResult(searchStr, loadDataCallback)
     }
 
-    override fun ping(): Observable<Response<Body>> {
+    override fun ping(): Observable<Response<Any>> {
         throw UnsupportedOperationException()
     }
 
     override fun saveMusics(items: List<TuneMusic>) {
-        items.forEach {
-            it.save()
-        }
+        throw UnsupportedOperationException()
     }
 
+
     override fun deleteMusics() {
-        SugarRecord.deleteAll(TuneMusic::class.java)
+        val db = x.getDb(DbConfig.daoConfig)
+        db.delete(TuneMusic::class.java)
+    }
+
+    override fun unsubscribe() {
+        compositeDisposable.dispose()
     }
 }

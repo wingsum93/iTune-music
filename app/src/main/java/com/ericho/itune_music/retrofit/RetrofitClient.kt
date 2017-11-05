@@ -35,18 +35,7 @@ object RetrofitClient {
 
             // Custom the http client.
             val httpClientBuilder = OkHttpClient.Builder()
-            httpClientBuilder.addInterceptor { chain ->
-                val original = chain.request()
-
-                // Custom the request header.
-                val requestBuilder = original.newBuilder()
-                        .header("Accept", "application/json")
-//                        .header("Authorization", "Bearer" + " " + mLastToken)
-                        .header("User-agent", "iTune Client ( iTune music android prototype ) by eric ho")
-                        .method(original.method(), original.body())
-                val request = requestBuilder.build()
-                chain.proceed(request)
-            }
+            httpClientBuilder.addInterceptor(DefaultInterceptor())
             //custom gson
             val gson = GsonBuilder()
                     .setDateFormat(DateFormat.LONG)
